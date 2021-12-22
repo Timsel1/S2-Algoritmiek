@@ -6,18 +6,21 @@ namespace Logic
 {
     public class Chair
     {
-        //public int amounOfChairs { get; private set; }
-        //private static readonly Random rnd = new Random();
+        public int ChairNumber { get; private set; }
+        public int RowNumber { get; private set; }
+        public bool Occupied { get; set; }
 
-        //public Chair()
-        //{
+        public Chair(int rowNmbr, int chairNmbr, bool taken)
+        {
+            this.ChairNumber = chairNmbr;
+            this.RowNumber = rowNmbr;
+            this.Occupied = taken;
+        }
 
-        //}
+        public override string ToString()
+        {
+            return $"{RowNumber + 1}-{ChairNumber + 1}";
+        }
 
-        //public int GenerateAmountOfChairs(int min, int max)
-        //{
-        //    amounOfChairs = rnd.Next(min, max);
-        //    return amounOfChairs;
-        //}
     }
 }
