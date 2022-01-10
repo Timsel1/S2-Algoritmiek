@@ -45,18 +45,18 @@ namespace Logic
             return AmountOfAdults;
         }
 
-        public int CountChairlessVisitors()
-        {
-            int chairlessVisitors = 0;
-            foreach (var groupMember in visitors)
-            {
-                if (groupMember.visitorChair == null)
-                {
-                    chairlessVisitors++;
-                }
-            }
-            return chairlessVisitors;
-        }
+        //public int CountChairlessVisitors()
+        //{
+        //    int chairlessVisitors = 0;
+        //    foreach (var groupMember in visitors)
+        //    {
+        //        if (groupMember.visitorChair == null)
+        //        {
+        //            chairlessVisitors++;
+        //        }
+        //    }
+        //    return chairlessVisitors;
+        //}
 
     }
 }

@@ -16,6 +16,11 @@ namespace Logic
             this.chairs = AddChairsToList(rows, chairAmount);
         }
 
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
+
         public List<Chair> AddChairsToList(int rows, int chairs)
         {
             List<Chair> sectionChairs = new List<Chair>();
@@ -25,7 +30,7 @@ namespace Logic
                 chairs = Clamp(chairs, 3, 10);
                 for (int j = 0; j < chairs; j++)
                 {
-                    sectionChairs.Add(new Chair(i, j, false));
+                    sectionChairs.Add(new Chair(i, j));
                 }
             }
             return sectionChairs;
@@ -48,5 +53,7 @@ namespace Logic
             }
             return UnoccupiedChairs;
         }
+
+        
     }
 }

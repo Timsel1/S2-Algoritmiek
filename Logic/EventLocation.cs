@@ -31,7 +31,7 @@ namespace Logic
         public void MakeVisitorList(int birthYear, int birthMonth, int birthDay, string name, int buyYear, int buyMonth, int buyDay)
         {
             Visitor EventVisitor = new Visitor(birthYear, birthMonth, birthDay, buyYear, buyMonth, buyDay);
-            visitors.Add(new Visitor(CheckVisitorAge(EventVisitor), name, CheckTicketBoughtInTime(EventVisitor), null));
+            visitors.Add(new Visitor(CheckVisitorAge(EventVisitor), name, CheckTicketBoughtInTime(EventVisitor)));
         }
 
         public void MakeGroup(int id, int size, int birthYear, int birthMonth, int birthDay, string name, int buyYear, int buyMonth, int buyDay)
@@ -40,7 +40,7 @@ namespace Logic
             for (int i = 0; i < size; i++)
             {
                 Visitor eventVisitor = new Visitor(birthYear, birthMonth, birthDay, buyYear, buyMonth, buyDay);
-                group.Add(new Visitor(CheckVisitorAge(eventVisitor), name, CheckTicketBoughtInTime(eventVisitor), null));
+                group.Add(new Visitor(CheckVisitorAge(eventVisitor), name, CheckTicketBoughtInTime(eventVisitor)));
             }
             groups.Add(new Group(id, size, group));
         }
@@ -70,21 +70,23 @@ namespace Logic
         {
             foreach (var visitor in visitors)
             {
-                foreach (var section in sections)
+                if (AllowIn(visitor))
                 {
-                    if (visitor.visitorChair != null)
-                    {
-                        break;
-                    }
-                    foreach (var chair in section.chairs)
-                    {
-                        if (AllowIn(visitor) && !chair.Occupied)
-                        {
-                            visitor.visitorChair = chair;
-                            chair.Occupied = true;
-                            break;
-                        }
-                    }
+                    GiveVisitorAChair(SelectBestSection(1), visitor);
+                }
+            }
+        }
+
+        private void GiveVisitorAChair(Section section, Visitor visitor)
+        {
+            foreach (var chair in section.chairs)
+            {
+                if (!chair.Occupied)
+                {
+                    
+                    chair.GetVisitor(visitor);
+                    chair.SetChairOccupation();
+                    break;
                 }
             }
         }
@@ -108,91 +110,54 @@ namespace Logic
         //    }
         //}
 
-        public Section SelectBestSectionForGroup(int chairlessMembers)
-        { 
+        public Section SelectBestSection(int visitorAmount)
+        {
             int chairsLeft = 100;
-            int optimalSection = 0;
-            for (int i = 0; i < sections.Count; i++)
+            Section optimalSection = sections[0];
+            foreach (var section in sections)
             {
-                int ChairVisitorDiff = chairlessMembers - sections[i].CountUnoccupiedChairs();
+                int ChairVisitorDiff = section.CountUnoccupiedChairs() - visitorAmount;
                 if (ChairVisitorDiff == 0)
                 {
-                    optimalSection = i;
+                    optimalSection = section;
                     break;
                 }
-                else if (chairsLeft > ChairVisitorDiff)
+                else if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff !< 0)
                 {
                     chairsLeft = ChairVisitorDiff;
-                    optimalSection = i;
+                    optimalSection = section;
                 }
             }
-
-            return sections[optimalSection];
+            return optimalSection;
         }
 
-        public List<Section> GetBigGroupSections(Group group)
+        public List<Section> GetBigGroupSectionList(Group group)
         {
-            Section section;
-            groupSections.Clear();
-            groupSections.Add(GetFirstBigGroupSection(group));
+            ChairlessGroupMembers = group.visitors.Count;
+            groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
             while (ChairlessGroupMembers > 0)
             {
-                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
-                {
-                    section = GetOtherBigGroupSections(group);
-                    if (!groupSections.Contains(section))
-                    {
-                        groupSections.Add(section);
-                    }
-                }
-                else
-                {
-                    section = SelectBestSectionForGroup(ChairlessGroupMembers);
-                    if (!groupSections.Contains(section))
-                    {
-                        groupSections.Add(section);
-                    }
-                }
+                Section section = GetBigGroupSection(ChairlessGroupMembers);
+                groupSections.Add(section);
             }
             return groupSections;
         }
 
-        public Section GetFirstBigGroupSection(Group group)
+        public Section GetBigGroupSection(int chairlessVisitors)
         {
             Section bestSection = sections[0];
             int counter = 0;
             foreach (var section in sections)
             {
-                int ChairVisitorDiff = group.visitors.Count - section.CountUnoccupiedChairs();
-                if (counter == 0)
+                int ChairVisitorDiff = chairlessVisitors - section.CountUnoccupiedChairs();
+                if (counter == 0 && !groupSections.Contains(sections[counter]))
                 {
                     ChairlessGroupMembers = ChairVisitorDiff;
                 }
-                else if (ChairVisitorDiff < ChairlessGroupMembers)
+                else if (ChairVisitorDiff < ChairlessGroupMembers && !groupSections.Contains(sections[counter]))
                 {
                     ChairlessGroupMembers = ChairVisitorDiff;
-                    bestSection = sections[counter];
-                }
-                counter++;
-            }
-            return bestSection;
-        }
-
-        public Section GetOtherBigGroupSections(Group group)
-        {
-            Section bestSection = sections[0];
-            int counter = 0;
-            foreach (var section in sections)
-            {
-                int ChairVisitorDiff = ChairlessGroupMembers - section.CountUnoccupiedChairs();
-                if (counter == 0)
-                {
-                    ChairVisitorDiff = ChairlessGroupMembers;
-                }
-                else if (ChairVisitorDiff < ChairlessGroupMembers)
-                {
-                    ChairVisitorDiff = ChairlessGroupMembers;
-                    bestSection = sections[counter];
+                    bestSection = section;
                 }
                 counter++;
             }
@@ -216,7 +181,7 @@ namespace Logic
             }
             return groupIsBigger;
         }
-    #endregion
+        #endregion
     }
-    
+
 }

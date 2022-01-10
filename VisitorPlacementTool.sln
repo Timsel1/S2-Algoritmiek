@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisitorPlacementTool", "Vis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic", "Logic\Logic.csproj", "{063D1435-5262-4B7E-A591-1F60D4CBE226}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{D1680ACD-ADF9-4D15-9DC6-A49A059A72B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{D1680ACD-ADF9-4D15-9DC6-A49A059A72B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "Exceptions\Exceptions.csproj", "{37FBE82A-27A3-48FA-ADB2-CE1788D59A05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{D1680ACD-ADF9-4D15-9DC6-A49A059A72B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1680ACD-ADF9-4D15-9DC6-A49A059A72B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1680ACD-ADF9-4D15-9DC6-A49A059A72B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37FBE82A-27A3-48FA-ADB2-CE1788D59A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37FBE82A-27A3-48FA-ADB2-CE1788D59A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37FBE82A-27A3-48FA-ADB2-CE1788D59A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37FBE82A-27A3-48FA-ADB2-CE1788D59A05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
