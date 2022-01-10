@@ -72,18 +72,17 @@ namespace Logic
             {
                 if (AllowIn(visitor))
                 {
-                    GiveVisitorAChair(SelectBestSection(1), visitor);
+                    CoupleChairAndVisitor(SelectBestSection(1), visitor);
                 }
             }
         }
 
-        private void GiveVisitorAChair(Section section, Visitor visitor)
+        private void CoupleChairAndVisitor(Section section, Visitor visitor)
         {
             foreach (var chair in section.chairs)
             {
                 if (!chair.Occupied)
                 {
-                    
                     chair.GetVisitor(visitor);
                     chair.SetChairOccupation();
                     break;
@@ -93,22 +92,32 @@ namespace Logic
         #endregion
 
         #region Group Functions
-        public void ClassifyGroups()
+        public void PlaceGroups()
         {
             foreach (var group in groups)
             {
-
+                GetBigGroupSectionList(group);
+                 
             }
         }
 
-        //public bool AllowInGroup(Group group)
-        //{
-        //    int groupSize = group.visitors.Count;
-        //    if (!GroupIsBiggerThanAllSections(groupSize))
-        //    {
-        //        return true;
-        //    }
-        //}
+        public bool AllowInGroup(Group group)
+        {
+            return groupSections.Count >= group.CountAmountOfAdults();
+        }
+
+        public int CountAllowableGroupMembers(Group group)
+        {
+            int members = 0;
+            foreach (var visitor in group.visitors)
+            {
+                if (visitor.TicketBought)
+                {
+                    members++;
+                }
+            }
+            return members;
+        }
 
         public Section SelectBestSection(int visitorAmount)
         {
@@ -133,7 +142,7 @@ namespace Logic
 
         public List<Section> GetBigGroupSectionList(Group group)
         {
-            ChairlessGroupMembers = group.visitors.Count;
+            ChairlessGroupMembers = CountAllowableGroupMembers(group);
             groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
             while (ChairlessGroupMembers > 0)
             {
