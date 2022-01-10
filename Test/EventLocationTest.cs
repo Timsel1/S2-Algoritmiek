@@ -74,7 +74,7 @@ namespace Test
             eventLocation.MakeSection("A", 1, 3);
             eventLocation.MakeVisitorList(2003, 2, 8, "Tim", 2021, 1, 1);
             //Act
-            eventLocation.ClassifyVisitors();
+            eventLocation.PlaceVisitors();
             //Assert
             Assert.IsNotNull(eventLocation.visitors[0].visitorChair);
         }

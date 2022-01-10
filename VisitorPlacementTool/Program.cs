@@ -8,17 +8,15 @@ namespace VisitorPlacementTool
         static void Main(string[] args)
         {
             EventLocation eventLocation = new EventLocation(2021, 2, 20, 2021, 1, 20);
-            eventLocation.MakeSection("A", 1, 3);
-            eventLocation.MakeVisitorList(2002, 9, 9, "jan", 2021, 1, 1);
-            eventLocation.MakeVisitorList(2002, 9, 9, "jap", 2021, 2, 1);
-            eventLocation.MakeVisitorList(2006, 9, 9, "jak", 2021, 1, 13);
-            eventLocation.MakeVisitorList(2002, 9, 9, "jal", 2021, 1, 20);
-            eventLocation.MakeVisitorList(2002, 9, 9, "jab", 2021, 1, 18);
-            eventLocation.MakeSection("4", 300, 8000);
-            eventLocation.ClassifyVisitors();
-            foreach (var visitor in eventLocation.sections)
+            eventLocation.MakeSection("A", 2, 3);
+            eventLocation.MakeSection("B", 1, 10);
+            eventLocation.MakeSection("C", 2, 9);
+            eventLocation.MakeSection("D", 1, 3);
+            eventLocation.MakeGroup(0, 30, 2000, 4, 7, "Nop", 2019, 9, 8);
+            eventLocation.GetBigGroupSections(eventLocation.groups[0]);
+            foreach (var item in eventLocation.groupSections)
             {
-                Console.WriteLine(visitor.chairs.Count);
+                Console.WriteLine(item.Name);
             }
             Console.ReadLine();
         }
