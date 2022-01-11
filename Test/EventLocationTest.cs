@@ -67,17 +67,17 @@ namespace Test
             Assert.AreEqual(allow, false);
         }
 
-        ///[TestMethod]
-        //public void IndividualsCanGetAChair()
-        //{
-        //    //Arrange
-        //    eventLocation.MakeSection("A", 1, 3);
-        //    eventLocation.MakeVisitorList(2003, 2, 8, "Tim", 2021, 1, 1);
-        //    //Act
-        //    eventLocation.PlaceVisitors();
-        //    //Assert
-        //    Assert.IsNotNull(eventLocation.visitors[0].visitorChair);
-        //}
+        [TestMethod]
+        public void IndividualsCanGetAChair()
+        {
+            //Arrange
+            eventLocation.MakeSection("A", 1, 3);
+            eventLocation.MakeVisitorList(2003, 2, 8, "Tim", 2021, 1, 1);
+            //Act
+            eventLocation.PlaceVisitors();
+            //Assert
+            Assert.AreEqual(eventLocation.sections[0].chairs[0].visitor, eventLocation.visitors[0]);
+        }
 
         [TestMethod]
         public void OptimalSectionCanBePickedForGroup()
@@ -91,10 +91,10 @@ namespace Test
             eventLocation.MakeGroup(0, 14, 2000, 1, 1, "Jan", 2020, 1, 1);
 
             //Act
-            eventLocation.SelectBestSection(0);
+            eventLocation.SelectBestSection(eventLocation.groups[0].visitors.Count);
 
             //Assert
-            Assert.AreEqual(eventLocation.SelectBestSection(0), eventLocation.sections[3]);
+            Assert.AreEqual(eventLocation.SelectBestSection(eventLocation.groups[0].visitors.Count), eventLocation.sections[3]);
         }
     }
 }

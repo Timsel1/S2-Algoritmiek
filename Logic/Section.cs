@@ -54,6 +54,17 @@ namespace Logic
             return UnoccupiedChairs;
         }
 
+        public void PlaceVisitors(Visitor visitor)
+        {
+            foreach (var chair in chairs)
+            {
+                if (visitor.TicketBought && !chair.Occupied)
+                {
+                    chair.GetVisitor(visitor);
+                    break;
+                }
+            }
+        }
         
     }
 }

@@ -97,7 +97,21 @@ namespace Logic
             foreach (var group in groups)
             {
                 GetBigGroupSectionList(group);
-                 
+                if (AllowInGroup(group))
+                {
+                    PlaceGroupMembers(group);
+                }
+            }
+        }
+
+        public void PlaceGroupMembers(Group group)
+        {
+            foreach (var section in groupSections)
+            {
+                foreach (var visitor in group.visitors)
+                {
+                    section.PlaceVisitors(visitor);
+                }
             }
         }
 
@@ -126,12 +140,7 @@ namespace Logic
             foreach (var section in sections)
             {
                 int ChairVisitorDiff = section.CountUnoccupiedChairs() - visitorAmount;
-                if (ChairVisitorDiff == 0)
-                {
-                    optimalSection = section;
-                    break;
-                }
-                else if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff !< 0)
+                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff! < 0)
                 {
                     chairsLeft = ChairVisitorDiff;
                     optimalSection = section;
@@ -192,5 +201,6 @@ namespace Logic
         }
         #endregion
     }
-
 }
+
+
