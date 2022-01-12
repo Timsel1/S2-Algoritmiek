@@ -109,32 +109,13 @@ namespace Logic
         {
             foreach (var section in groupSections)
             {
-                foreach (var visitor in group.visitors)
-                {
-                    if (!section.SectionFull )
-                    {
-                        foreach (var chair in section.chairs)
-                        {
-                            if (visitor.TicketBought && !chair.Occupied && !visitor.HasChair)
-                            {
-                                visitor.HasChair = true;
-                                chair.GetVisitor(visitor);
-                                chair.SetChairOccupation();
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                group.PlacePeople(section);
             }
         }
 
         public bool AllowInGroup(Group group)
         {
-            return groupSections.Count >= group.CountAmountOfAdults();
+            return groupSections.Count <= group.CountAmountOfAdults();
         }
 
         public int CountAllowableGroupMembers(Group group)
@@ -157,12 +138,13 @@ namespace Logic
             foreach (var section in sections)
             {
                 int ChairVisitorDiff = section.CountUnoccupiedChairs() - visitorAmount;
-                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff! < 0)
+                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff >= 0 && !groupSections.Contains(section))
                 {
                     chairsLeft = ChairVisitorDiff;
                     optimalSection = section;
                 }
             }
+            ChairlessGroupMembers = 0;
             return optimalSection;
         }
 
@@ -172,8 +154,14 @@ namespace Logic
             groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
             while (ChairlessGroupMembers > 0)
             {
-                Section section = GetBigGroupSection(ChairlessGroupMembers);
-                groupSections.Add(section);
+                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
+                {
+                    groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
+                }
+                else
+                {
+                    groupSections.Add(SelectBestSection(ChairlessGroupMembers));
+                }
             }
             return groupSections;
         }

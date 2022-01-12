@@ -37,12 +37,27 @@ namespace Logic
             AmountOfAdults = 0;
             foreach (var groupMember in visitors)
             {
-                if (groupMember.Age >= 18)
+                if (groupMember.Age > 17)
                 {
                     AmountOfAdults++;
                 }
             }
             return AmountOfAdults;
+        }
+
+        public void PlacePeople(Section section)
+        {
+            foreach (var visitor in visitors)
+            {
+                if (!section.SectionFull)
+                {
+                    section.PlaceVisitors(visitor);
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
 
         //public int CountChairlessVisitors()

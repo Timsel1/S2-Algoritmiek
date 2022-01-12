@@ -74,14 +74,16 @@ namespace Logic
 
         public void PlaceVisitors(Visitor visitor)
         {
-            //foreach (var chair in chairs)
-            //{
-            //    if (visitor.TicketBought && !chair.Occupied)
-            //    {
-            //        chair.GetVisitor(visitor);
-            //        break;
-            //    }
-            //}
+            foreach (var chair in chairs)
+            {
+                if (visitor.TicketBought && !chair.Occupied && !visitor.HasChair)
+                {
+                    visitor.HasChair = true;
+                    chair.GetVisitor(visitor);
+                    chair.SetChairOccupation();
+                    break;
+                }
+            }
         }
         
     }
