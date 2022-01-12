@@ -86,5 +86,18 @@ namespace Logic
             }
         }
         
+        public void CoupleChairAndIndividualVisitor(Visitor visitor)
+        {
+            foreach (var chair in chairs)
+            {
+                if (!chair.Occupied)
+                {
+                    chair.GetVisitor(visitor);
+                    chair.SetChairOccupation();
+                    break;
+                }
+            }
+        }
+
     }
 }

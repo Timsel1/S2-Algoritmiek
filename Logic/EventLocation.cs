@@ -68,6 +68,7 @@ namespace Logic
         #region Visitor functions
         public void PlaceVisitors()
         {
+            groupSections.Clear();
             foreach (var visitor in visitors)
             {
                 if (AllowIn(visitor))
@@ -79,19 +80,11 @@ namespace Logic
 
         private void CoupleChairAndVisitor(Section section, Visitor visitor)
         {
-            foreach (var chair in section.chairs)
-            {
-                if (!chair.Occupied)
-                {
-                    chair.GetVisitor(visitor);
-                    chair.SetChairOccupation();
-                    break;
-                }
-            }
+            section.CoupleChairAndIndividualVisitor(visitor);
         }
         #endregion
 
-        #region Group Functions
+        #region Group Algorithm
         public void PlaceGroups()
         {
             foreach (var group in groups)
@@ -113,11 +106,6 @@ namespace Logic
             }
         }
 
-        public bool AllowInGroup(Group group)
-        {
-            return groupSections.Count <= group.CountAmountOfAdults();
-        }
-
         public int CountAllowableGroupMembers(Group group)
         {
             int members = 0;
@@ -130,7 +118,9 @@ namespace Logic
             }
             return members;
         }
+        #endregion
 
+        #region Select Group Section Functions
         public Section SelectBestSection(int visitorAmount)
         {
             int chairsLeft = 100;
@@ -138,7 +128,7 @@ namespace Logic
             foreach (var section in sections)
             {
                 int ChairVisitorDiff = section.CountUnoccupiedChairs() - visitorAmount;
-                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff >= 0 && !groupSections.Contains(section))
+                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff > -1 && !groupSections.Contains(section))
                 {
                     chairsLeft = ChairVisitorDiff;
                     optimalSection = section;
@@ -146,24 +136,6 @@ namespace Logic
             }
             ChairlessGroupMembers = 0;
             return optimalSection;
-        }
-
-        public List<Section> GetBigGroupSectionList(Group group)
-        {
-            ChairlessGroupMembers = CountAllowableGroupMembers(group);
-            groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
-            while (ChairlessGroupMembers > 0)
-            {
-                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
-                {
-                    groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
-                }
-                else
-                {
-                    groupSections.Add(SelectBestSection(ChairlessGroupMembers));
-                }
-            }
-            return groupSections;
         }
 
         public Section GetBigGroupSection(int chairlessVisitors)
@@ -185,6 +157,30 @@ namespace Logic
                 counter++;
             }
             return bestSection;
+        }
+
+        public List<Section> GetBigGroupSectionList(Group group)
+        {
+            ChairlessGroupMembers = CountAllowableGroupMembers(group);
+            while (ChairlessGroupMembers > 0)
+            {
+                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
+                {
+                    groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
+                }
+                else
+                {
+                    groupSections.Add(SelectBestSection(ChairlessGroupMembers));
+                }
+            }
+            return groupSections;
+        }
+        #endregion
+
+        #region Group Bools
+        public bool AllowInGroup(Group group)
+        {
+            return groupSections.Count <= group.CountAmountOfAdults();
         }
 
         public bool GroupIsBiggerThanAllSections(int groupSize)
