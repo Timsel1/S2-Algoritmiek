@@ -96,6 +96,7 @@ namespace Logic
         {
             foreach (var group in groups)
             {
+                groupSections.Clear();
                 GetBigGroupSectionList(group);
                 if (AllowInGroup(group))
                 {
@@ -110,7 +111,23 @@ namespace Logic
             {
                 foreach (var visitor in group.visitors)
                 {
-                    section.PlaceVisitors(visitor);
+                    if (!section.SectionFull )
+                    {
+                        foreach (var chair in section.chairs)
+                        {
+                            if (visitor.TicketBought && !chair.Occupied && !visitor.HasChair)
+                            {
+                                visitor.HasChair = true;
+                                chair.GetVisitor(visitor);
+                                chair.SetChairOccupation();
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }

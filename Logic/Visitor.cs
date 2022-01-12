@@ -14,7 +14,7 @@ namespace Logic
         public bool TicketBought { get; private set; }
         public string Name { get; private set; }
         public bool IsAdult { get; private set; }
-        public bool HasChair { get; private set; }
+        public bool HasChair { get; set; }
 
         public Visitor(int birthYear, int birthMonth, int birthDay, int buyYear, int buyMonth, int buyDay)
         {

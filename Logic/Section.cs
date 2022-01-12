@@ -9,6 +9,7 @@ namespace Logic
         public List<Chair> chairs = new List<Chair>();
         public string Name { get; private set; }
         public int UnoccupiedChairs { get; private set; }
+        public bool SectionFull { get; private set; }
 
         public Section(string name, int rows, int chairAmount)
         {
@@ -54,16 +55,33 @@ namespace Logic
             return UnoccupiedChairs;
         }
 
-        public void PlaceVisitors(Visitor visitor)
+        public bool SectionIsFull()
         {
-            foreach (var chair in chairs)
+            foreach(var chair in chairs)
             {
-                if (visitor.TicketBought && !chair.Occupied)
+                if (chair.Occupied)
                 {
-                    chair.GetVisitor(visitor);
-                    break;
+                    SectionFull = true;
+                }
+                else
+                {
+                    SectionFull = false;
                 }
             }
+            return SectionFull;
+        }
+
+
+        public void PlaceVisitors(Visitor visitor)
+        {
+            //foreach (var chair in chairs)
+            //{
+            //    if (visitor.TicketBought && !chair.Occupied)
+            //    {
+            //        chair.GetVisitor(visitor);
+            //        break;
+            //    }
+            //}
         }
         
     }

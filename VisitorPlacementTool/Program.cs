@@ -12,10 +12,10 @@ namespace VisitorPlacementTool
             eventLocation.MakeSection("B", 1, 3);
             eventLocation.MakeSection("C", 1, 3);
             //eventLocation.MakeSection("D", 1, 3);
-            eventLocation.MakeGroup(0, 6, 2003, 9, 8, "nup", 2020, 9, 9);
+            eventLocation.MakeGroup(0, 9, 2003, 9, 8, "nup", 2020, 9, 9);
             eventLocation.MakeVisitorList(2003, 2, 2, "tim", 2020, 9, 9);
             eventLocation.GetBigGroupSectionList(eventLocation.groups[0]);
-            eventLocation.PlaceVisitors();
+            eventLocation.PlaceGroups();
             foreach (var item in eventLocation.groupSections)
             {
                 Console.WriteLine(item);
