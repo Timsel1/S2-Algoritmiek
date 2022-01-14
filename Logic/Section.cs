@@ -55,30 +55,13 @@ namespace Logic
             return UnoccupiedChairs;
         }
 
-        public bool SectionIsFull()
-        {
-            foreach(var chair in chairs)
-            {
-                if (chair.Occupied)
-                {
-                    SectionFull = true;
-                }
-                else
-                {
-                    SectionFull = false;
-                }
-            }
-            return SectionFull;
-        }
-
-
         public void PlaceVisitors(Visitor visitor)
         {
             foreach (var chair in chairs)
             {
                 if (visitor.TicketBought && !chair.Occupied && !visitor.HasChair)
                 {
-                    visitor.HasChair = true;
+                    visitor.VisitorHasChair();
                     chair.GetVisitor(visitor);
                     chair.SetChairOccupation();
                     break;
@@ -92,6 +75,7 @@ namespace Logic
             {
                 if (!chair.Occupied)
                 {
+                    visitor.VisitorHasChair();
                     chair.GetVisitor(visitor);
                     chair.SetChairOccupation();
                     break;

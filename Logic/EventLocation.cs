@@ -6,7 +6,6 @@ namespace Logic
 {
     public class EventLocation
     {
-        public bool IsAllowedIn { get; private set; }
         private int ChairlessGroupMembers { get; set; }
         public DateTime EventDate { get; private set; }
         public DateTime TicketSaleEndDate { get; private set; }
@@ -128,7 +127,7 @@ namespace Logic
             foreach (var section in sections)
             {
                 int ChairVisitorDiff = section.CountUnoccupiedChairs() - visitorAmount;
-                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff > -1 && !groupSections.Contains(section))
+                if (ChairVisitorDiff < chairsLeft && ChairVisitorDiff >= 0 && !groupSections.Contains(section))
                 {
                     chairsLeft = ChairVisitorDiff;
                     optimalSection = section;
@@ -200,6 +199,17 @@ namespace Logic
             }
             return groupIsBigger;
         }
+        #endregion
+
+        #region Full Algorithm
+        public void FullAlgorithm()
+        {
+            PlaceGroups();
+            PlaceVisitors();
+            sections[2].CountUnoccupiedChairs();
+        }
+
+
         #endregion
     }
 }

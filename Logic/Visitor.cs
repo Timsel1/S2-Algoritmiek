@@ -32,8 +32,12 @@ namespace Logic
 
         public override string ToString()
         {
-            return $"age is {Age}, name is {Name}, ticket bought in time {TicketBought}";
+            return $"age is {Age}, name is {Name}, ticket bought in time {TicketBought} and has chair {HasChair}";
         }
 
+        public void VisitorHasChair()
+        {
+            HasChair = true;
+        }
     }
 }

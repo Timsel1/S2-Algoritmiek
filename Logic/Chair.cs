@@ -7,6 +7,7 @@ namespace Logic
     public class Chair
     {
 #nullable enable
+        public int count { get; set; }
         public int ChairNumber { get; private set; }
         public int RowNumber { get; private set; }
         public bool Occupied { get; set; }
@@ -20,17 +21,18 @@ namespace Logic
 
         public override string ToString()
         {
-            return $"{RowNumber + 1}-{ChairNumber + 1} {visitor}";
+            return $"{RowNumber + 1}-{ChairNumber + 1} {visitor} {Occupied}";
         }
 
-        public Visitor GetVisitor(Visitor chairVisitor)
+        public void GetVisitor(Visitor chairVisitor)
         {
-            return visitor = chairVisitor;
+            visitor = chairVisitor;
         }
 
         public void SetChairOccupation()
         {
-            Occupied = (visitor != null);
+            Occupied = true;
+            count++;
         }
 #nullable disable
     }
