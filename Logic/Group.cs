@@ -12,18 +12,39 @@ namespace Logic
         public bool HasAdult { get; private set; }
         public List<Visitor> visitors = new List<Visitor>();
 
-        public Group(int groupId, int size, List<Visitor> groupVisitors)
+        public Group(int groupId)
         {
-            this.visitors = groupVisitors;
-            this.Size = size;
+            this.Size = visitors.Count;
             this.GroupId = groupId;
+        }
+
+        public void MakeAdults(int amount, DateTime eventDate, DateTime ticketSaleEnd)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                Visitor visitor = new Visitor(GroupId, 1998, 9, 9, 2021, 1, 10);
+                visitor.CalculateVisitorAge(eventDate);
+                visitor.CalculateTicketBoughtInTime(ticketSaleEnd);
+                visitors.Add(visitor);
+            }
+        }
+
+        public void MakeKid(int amount, DateTime eventDate, DateTime ticketSaleEnd)
+        {
+            for(int i = 0; i < amount; i++)
+            {
+                Visitor visitor = new Visitor(GroupId, 2015, 9, 9, 2021, 1, 10);
+                visitor.CalculateVisitorAge(eventDate);
+                visitor.CalculateTicketBoughtInTime(ticketSaleEnd);
+                visitors.Add(visitor);
+            }
         }
 
         public bool GroupHasAdult()
         {
             foreach (var groupMember in visitors)
             {
-                if (groupMember.Age >= 18)
+                if (groupMember.Age >= 12)
                 {
                     HasAdult = true;
                     break;
@@ -37,41 +58,12 @@ namespace Logic
             AmountOfAdults = 0;
             foreach (var groupMember in visitors)
             {
-                if (groupMember.Age > 17)
+                if (groupMember.Age >= 12)
                 {
                     AmountOfAdults++;
                 }
             }
             return AmountOfAdults;
         }
-
-        public void PlacePeople(Section section)
-        {
-            foreach (var visitor in visitors)
-            {
-                if (!section.SectionFull)
-                {
-                    section.PlaceVisitors(visitor);
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-        //public int CountChairlessVisitors()
-        //{
-        //    int chairlessVisitors = 0;
-        //    foreach (var groupMember in visitors)
-        //    {
-        //        if (groupMember.visitorChair == null)
-        //        {
-        //            chairlessVisitors++;
-        //        }
-        //    }
-        //    return chairlessVisitors;
-        //}
-
     }
 }

@@ -26,7 +26,7 @@ namespace Test
         {
             //Arrange
             Section section = new Section("A", 1, 3);
-            section.chairs[1].Occupied = true;
+            section.chairs[1].SetChairOccupied();
 
             //Act
             section.CountUnoccupiedChairs();

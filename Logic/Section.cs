@@ -61,27 +61,26 @@ namespace Logic
             {
                 if (visitor.TicketBought && !chair.Occupied && !visitor.HasChair)
                 {
-                    visitor.VisitorHasChair();
-                    chair.GetVisitor(visitor);
-                    chair.SetChairOccupation();
-                    break;
-                }
-            }
-        }
-        
-        public void CoupleChairAndIndividualVisitor(Visitor visitor)
-        {
-            foreach (var chair in chairs)
-            {
-                if (!chair.Occupied)
-                {
-                    visitor.VisitorHasChair();
-                    chair.GetVisitor(visitor);
-                    chair.SetChairOccupation();
+                    visitor.GiveVisitorAChair();
+                    chair.GiveChairAVisitor(visitor);
+                    chair.SetChairOccupied();
                     break;
                 }
             }
         }
 
+        public void CoupleChairAndVisitor(Visitor visitor)
+        {
+            foreach (var chair in chairs)
+            {
+                if (!chair.Occupied)
+                {
+                    visitor.GiveVisitorAChair();
+                    chair.GiveChairAVisitor(visitor);
+                    chair.SetChairOccupied();
+                    break;
+                }
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@ namespace Logic
         private int ChairlessGroupMembers { get; set; }
         public DateTime EventDate { get; private set; }
         public DateTime TicketSaleEndDate { get; private set; }
-        private readonly DateTime zeroTime = new DateTime(1, 1, 1);
         public List<Visitor> visitors = new List<Visitor>();
         public List<Group> groups = new List<Group>();
         public List<Section> sections = new List<Section>();
@@ -22,105 +21,80 @@ namespace Logic
         }
         #region Make Functions
 #nullable enable
-        public void MakeSection(string name, int rows, int chairs)
+        public void MakeSectionList(string name, int rows, int chairs)
         {
             sections.Add(new Section(name, rows, chairs));
         }
 
-        public void MakeVisitorList(int birthYear, int birthMonth, int birthDay, string name, int buyYear, int buyMonth, int buyDay)
+        public void MakeVisitorList(string name, int birthYear, int birthMonth, int birthDay, int buyYear, int buyMonth, int buyDay)
         {
-            Visitor EventVisitor = new Visitor(birthYear, birthMonth, birthDay, buyYear, buyMonth, buyDay);
-            visitors.Add(new Visitor(CheckVisitorAge(EventVisitor), name, CheckTicketBoughtInTime(EventVisitor)));
+            Visitor EventVisitor = new Visitor(name, birthYear, birthMonth, birthDay, buyYear, buyMonth, buyDay);
+            EventVisitor.CalculateVisitorAge(EventDate);
+            EventVisitor.CalculateTicketBoughtInTime(TicketSaleEndDate);
+            visitors.Add(EventVisitor);
         }
 
-        public void MakeGroup(int id, int size, int birthYear, int birthMonth, int birthDay, string name, int buyYear, int buyMonth, int buyDay)
+        public void MakeGroup(int id, int amountOfAdults, int amountOfChildren)
         {
-            List<Visitor> group = new List<Visitor>();
-            for (int i = 0; i < size; i++)
-            {
-                Visitor eventVisitor = new Visitor(birthYear, birthMonth, birthDay, buyYear, buyMonth, buyDay);
-                group.Add(new Visitor(CheckVisitorAge(eventVisitor), name, CheckTicketBoughtInTime(eventVisitor)));
-            }
-            groups.Add(new Group(id, size, group));
-        }
-        #endregion
-
-        #region Check Functions
-        public int CheckVisitorAge(Visitor visitor)
-        {
-            TimeSpan timeSpan = EventDate - visitor.BirthDate;
-            return (zeroTime + timeSpan).Year - 1;
-        }
-
-        public bool CheckTicketBoughtInTime(Visitor visitor)
-        {
-            var diffOfDates = TicketSaleEndDate.Subtract(visitor.TicketBuyDate);
-            return (diffOfDates.Days >= 0);
-        }
-
-        public bool AllowIn(Visitor visitor)
-        {
-            return (visitor.Age >= 18 && visitor.TicketBought);
+            Group group = new Group(id);
+            group.MakeAdults(amountOfAdults, EventDate, TicketSaleEndDate);
+            group.MakeKid(amountOfChildren, EventDate, TicketSaleEndDate);
+            groups.Add(group);
         }
         #endregion
 
-        #region Visitor functions
-        public void PlaceVisitors()
+        #region Group Functions
+        public List<Section> GetOptimalSectionListForGroup(Group group)
         {
-            groupSections.Clear();
-            foreach (var visitor in visitors)
+            ChairlessGroupMembers = CountAllowableGroupMembers(group);
+            while (ChairlessGroupMembers > 0)
             {
-                if (AllowIn(visitor))
+                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
                 {
-                    CoupleChairAndVisitor(SelectBestSection(1), visitor);
+                    groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
+                }
+                else
+                {
+                    groupSections.Add(SelectOptimalSection(ChairlessGroupMembers));
                 }
             }
+            return groupSections;
         }
 
-        private void CoupleChairAndVisitor(Section section, Visitor visitor)
-        {
-            section.CoupleChairAndIndividualVisitor(visitor);
-        }
-        #endregion
-
-        #region Group Algorithm
-        public void PlaceGroups()
-        {
-            foreach (var group in groups)
-            {
-                groupSections.Clear();
-                GetBigGroupSectionList(group);
-                if (AllowInGroup(group))
-                {
-                    PlaceGroupMembers(group);
-                }
-            }
-        }
-
-        public void PlaceGroupMembers(Group group)
+        public void PlaceAdultInEachSection(Group group)
         {
             foreach (var section in groupSections)
             {
-                group.PlacePeople(section);
-            }
-        }
-
-        public int CountAllowableGroupMembers(Group group)
-        {
-            int members = 0;
-            foreach (var visitor in group.visitors)
-            {
-                if (visitor.TicketBought)
+                foreach (var visitor in group.visitors)
                 {
-                    members++;
+                    if (visitor.Age > 12 && !visitor.HasChair)
+                    {
+                        section.CoupleChairAndVisitor(visitor);
+                        break;
+                    }
                 }
             }
-            return members;
         }
         #endregion
 
         #region Select Group Section Functions
-        public Section SelectBestSection(int visitorAmount)
+        public Section GetBigGroupSection(int chairlessVisitors)
+        {
+            Section bestSection = sections[0];
+            ChairlessGroupMembers = 100;
+            foreach (var section in sections)
+            {
+                int ChairVisitorDiff = chairlessVisitors - section.CountUnoccupiedChairs();
+                if (ChairVisitorDiff < ChairlessGroupMembers && !groupSections.Contains(section))
+                {
+                    ChairlessGroupMembers = ChairVisitorDiff;
+                    bestSection = section;
+                }
+            }
+            return bestSection;
+        }
+
+        public Section SelectOptimalSection(int visitorAmount)
         {
             int chairsLeft = 100;
             Section optimalSection = sections[0];
@@ -136,47 +110,40 @@ namespace Logic
             ChairlessGroupMembers = 0;
             return optimalSection;
         }
+        #endregion
 
-        public Section GetBigGroupSection(int chairlessVisitors)
+        #region Count Functions
+
+        private int CountAllowableGroupMembers(Group group)
         {
-            Section bestSection = sections[0];
-            int counter = 0;
-            foreach (var section in sections)
+            int members = 0;
+            foreach (var visitor in group.visitors)
             {
-                int ChairVisitorDiff = chairlessVisitors - section.CountUnoccupiedChairs();
-                if (counter == 0 && !groupSections.Contains(sections[counter]))
+                if (visitor.TicketBought)
                 {
-                    ChairlessGroupMembers = ChairVisitorDiff;
+                    members++;
                 }
-                else if (ChairVisitorDiff < ChairlessGroupMembers && !groupSections.Contains(sections[counter]))
-                {
-                    ChairlessGroupMembers = ChairVisitorDiff;
-                    bestSection = section;
-                }
-                counter++;
             }
-            return bestSection;
+            return members;
         }
 
-        public List<Section> GetBigGroupSectionList(Group group)
+        public int CountAssignedChairsOccupation()
         {
-            ChairlessGroupMembers = CountAllowableGroupMembers(group);
-            while (ChairlessGroupMembers > 0)
+            int freeChairs = 0;
+            foreach (var section in sections)
             {
-                if (GroupIsBiggerThanAllSections(ChairlessGroupMembers))
-                {
-                    groupSections.Add(GetBigGroupSection(ChairlessGroupMembers));
-                }
-                else
-                {
-                    groupSections.Add(SelectBestSection(ChairlessGroupMembers));
-                }
+                freeChairs = section.CountUnoccupiedChairs();
             }
-            return groupSections;
+            return freeChairs;
         }
         #endregion
 
-        #region Group Bools
+        #region Bool Functions
+        public bool AllowIn(Visitor visitor)
+        {
+            return (visitor.Age >= 12 && visitor.TicketBought);
+        }
+
         public bool AllowInGroup(Group group)
         {
             return groupSections.Count <= group.CountAmountOfAdults();
@@ -202,11 +169,49 @@ namespace Logic
         #endregion
 
         #region Full Algorithm
+
+        public void PlaceGroups()
+        {
+            foreach (var group in groups)
+            {
+                groupSections.Clear();
+                GetOptimalSectionListForGroup(group);
+                if (AllowInGroup(group))
+                {
+                    PlaceAdultInEachSection(group);
+                    foreach (var section in groupSections)
+                    {
+                        if (!section.SectionFull)
+                        {
+                            foreach (var visitor in group.visitors)
+                            {
+                                section.PlaceVisitors(visitor);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public void PlaceVisitors()
+        {
+            groupSections.Clear();
+            foreach (var visitor in visitors)
+            {
+                if (AllowIn(visitor))
+                {
+                    Section optimalSection = SelectOptimalSection(1);
+                    optimalSection.CoupleChairAndVisitor(visitor);
+                }
+            }
+        }
+
         public void FullAlgorithm()
         {
             PlaceGroups();
             PlaceVisitors();
-            sections[2].CountUnoccupiedChairs();
+            CountAssignedChairsOccupation();
         }
 
 
